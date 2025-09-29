@@ -1,6 +1,6 @@
 import unreal
 
-# กำหนด class
+# กำหนด ตัวแปร = ค่าตัวแปร
 Dev_name = "Biskrit"
 target_folder = "/Game/ICRC_Box"
 
@@ -10,6 +10,7 @@ asset_tools = unreal.AssetToolsHelpers.get_asset_tools()
 assets = unreal.EditorAssetLibrary.list_assets(target_folder, recursive=True)
 total_assets = len(assets)
 
+# กำหนดตัวแปรของ SM/TX/M/MI
 count_texture = 0
 count_staticmesh = 0
 count_material = 0
@@ -75,3 +76,4 @@ unreal.EditorDialog.show_message(
     message=summary_message,
     message_type=unreal.AppMsgType.OK
 )
+
