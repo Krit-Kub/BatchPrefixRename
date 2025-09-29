@@ -51,7 +51,7 @@ with unreal.ScopedSlowTask(total_assets, f"Renaming Assets in {target_folder}") 
 
         slow_task.enter_progress_frame(1)
 
-# สรุป log
+# สรุป log โดย f ประกาศเป็น str โดยดึงข้อมูลจากตัวแปร count of SM/TX/M/MI
 print("\n✅ Rename complete for folder:", target_folder)
 print(f"[{Dev_name}] Summary:")
 print(f"Textures renamed: {count_texture}")
@@ -76,4 +76,5 @@ unreal.EditorDialog.show_message(
     message=summary_message,
     message_type=unreal.AppMsgType.OK
 )
+
 
