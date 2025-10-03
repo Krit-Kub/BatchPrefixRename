@@ -1,0 +1,83 @@
+import unreal
+
+# -------------------------
+Dev_name = "Biskrit"
+target_folder = "/Game/Props/SmallCrater"
+# -------------------------
+
+asset_tools = unreal.AssetToolsHelpers.get_asset_tools()
+
+assets = unreal.EditorAssetLibrary.list_assets(target_folder, recursive=True)
+total_assets = len(assets)
+
+count_texture = 0
+count_staticmesh = 0
+count_material = 0
+count_material_instance = 0
+
+with unreal.ScopedSlowTask(total_assets, f"Duplicating Assets in {target_folder}") as slow_task:
+    slow_task.make_dialog(True)
+
+    for asset_path in assets:
+        asset = unreal.load_asset(asset_path)
+        if asset is None:
+            slow_task.enter_progress_frame(1)
+            continue
+
+        name = asset.get_name()
+        new_name = None
+
+        # กำหนด prefix ตามประเภท
+        if isinstance(asset, unreal.Texture) and not name.startswith("TX_"):
+            new_name = f"TX_{name}"
+            count_texture += 1
+        elif isinstance(asset, unreal.StaticMesh) and not name.startswith("SM_"):
+            new_name = f"SM_{name}"
+            count_staticmesh += 1
+        elif isinstance(asset, unreal.Material) and not name.startswith("M_"):
+            new_name = f"M_{name}"
+            count_material += 1
+        elif isinstance(asset, unreal.MaterialInstance) and not name.startswith("MI_"):
+            new_name = f"MI_{name}"
+            count_material_instance += 1
+
+        if new_name:
+            # เอา package path ของ folder เดิม
+            package_path = unreal.EditorAssetLibrary.get_path_name_for_loaded_asset(asset).rpartition('/')[0]
+
+            # Duplicate asset → จะไม่ replace ของเดิม
+            duplicated_asset = asset_tools.duplicate_asset(new_name, package_path, asset)
+
+            if duplicated_asset:
+                print(f"[{Dev_name}] Duplicated: {name} -> {new_name}")
+            else:
+                print(f"[{Dev_name}] Failed to duplicate: {name}")
+
+        slow_task.enter_progress_frame(1)
+
+# -------------------------
+# สรุป log
+print("\n✅ Duplication complete for folder:", target_folder)
+print(f"[{Dev_name}] Summary:")
+print(f"Textures duplicated: {count_texture}")
+print(f"StaticMeshes duplicated: {count_staticmesh}")
+print(f"Materials duplicated: {count_material}")
+print(f"Material Instances duplicated: {count_material_instance}")
+print(f"Developed by: {Dev_name}")
+
+# -------------------------
+# Pop-up message พร้อม summary
+summary_message = (
+    f"✅ All assets duplicated successfully!\n\n"
+    f"Textures: {count_texture}\n"
+    f"StaticMeshes: {count_staticmesh}\n"
+    f"Materials: {count_material}\n"
+    f"Material Instances: {count_material_instance}\n\n"
+    f"Developed by: {Dev_name}"
+)
+
+unreal.EditorDialog.show_message(
+    title="Duplication Complete",
+    message=summary_message,
+    message_type=unreal.AppMsgType.OK
+)
